@@ -1,0 +1,32 @@
+FROM ubuntu:24.04
+
+ARG DNS=localhost
+ARG HTTP_APP_PORT=8080
+
+RUN apt-get update -y
+
+####################################
+## INSTALAMOS PAQUETES NECESARIOS
+####################################
+RUN apt-get install -y openjdk-17-jdk
+
+#################################
+## CREAMOS DIRECTORIOS
+#################################
+RUN mkdir -p /srv/aplicaciones/accounts
+RUN mkdir -p /srv/aplicaciones/clients
+
+####################################
+## COPIAMOS ENVIRONMENT y JARS
+####################################
+COPY environments/account.env /srv/aplicaciones/accounts/.env
+COPY environments/client.env /srv/aplicaciones/clients/.env
+
+COPY java/TataJavaAccounts* /srv/aplicaciones/accounts/Accounts.jar
+COPY java/TataJavaClients* /srv/aplicaciones/clients/Clients.jar
+
+COPY start.sh /usr/local/bin/start.sh
+RUN chmod +x /usr/local/bin/start.sh
+
+# Ejecutar el script de inicio
+CMD ["/usr/local/bin/start.sh"]

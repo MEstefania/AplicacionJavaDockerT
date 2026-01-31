@@ -1,0 +1,44 @@
+services:
+  tata-database:
+    hostname: postgres-db
+    image: lmmdock/postgres-multi
+    container_name: tata-database
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USERS: "tata_owner:password|tata_user:password"
+      POSTGRES_DATABASES: "accounting_db:tata_owner|customer_db:tata_owner"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U tata_owner -d accounting_db" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: always
+
+  app-banco:
+    container_name: prueba-tecnica
+    build:
+      context: ./
+      dockerfile: dockerFile
+      #args:
+        #DNS: localhost
+        #HTTP_APP_PORT: 80
+    ports:
+      - "8085:8085"
+      - "8083:8083"
+    restart: always
+    stdin_open: true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+    links:
+      - tata-database
+    depends_on:
+      tata-database:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
