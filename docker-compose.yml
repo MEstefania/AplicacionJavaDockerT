@@ -4,7 +4,7 @@ services:
     image: lmmdock/postgres-multi
     container_name: tata-database
     ports:
-      - "5432:5432"
+      - "5433:5433"
     environment:
       POSTGRES_USERS: "tata_owner:password|tata_user:password"
       POSTGRES_DATABASES: "accounting_db:tata_owner|customer_db:tata_owner"
